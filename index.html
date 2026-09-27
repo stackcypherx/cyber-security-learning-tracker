@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cyber Security Learning Tracker</title>
+<meta name="description" content="A personal training log for the road from TryHackMe free rooms to OSCP and red teaming.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#10151C; --panel:#161D26; --panel2:#1B232E; --line:#26313F; --line2:#323F51;
+  --ink:#E7EEF6; --dim:#93A1B4; --faint:#5F6C7E;
+  --accent:#F5A524; --accent-soft:rgba(245,165,36,.14);
+  --d1:#6E7D8F; --d2:#C9A63C; --d3:#E89B3C; --d4:#E8703A; --d5:#D6455D;
+  --rail:248px; --maxw:1180px;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font:400 15px/1.6 "Public Sans",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+/* ---------- hero ---------- */
+.hero{padding:64px 0 40px;border-bottom:1px solid var(--line)}
+.eyebrow{
+  font:500 11px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;
+  color:var(--faint);margin:0 0 22px;
+}
+.hero h1{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:clamp(36px,6.2vw,68px);line-height:.98;letter-spacing:-.025em;
+  margin:0 0 18px;max-width:14ch;
+}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.lede{color:var(--dim);max-width:62ch;margin:0 0 44px;font-size:17px}
+
+/* ---------- ascent bar (signature) ---------- */
+.ascent{margin-top:8px}
+.ascent-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:12px;
+}
+.ascent-head b{color:var(--ink);font-weight:700;font-size:13px;letter-spacing:.04em}
+.bars{display:flex;gap:5px;align-items:stretch}
+.seg{min-width:58px;text-decoration:none;display:block}
+.seg-track{
+  display:block;height:52px;background:var(--panel2);border:1px solid var(--line);
+  position:relative;overflow:hidden;border-radius:3px;
+}
+.seg-fill{
+  position:absolute;inset:0 auto 0 0;width:0;
+  background:linear-gradient(180deg,var(--accent),#D98A12);
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+.seg-track::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,transparent 0 13px,rgba(255,255,255,.04) 13px 14px);
+}
+.seg,.seg:hover,.rail a:hover{text-decoration:none}
+.seg:hover .seg-track{border-color:var(--line2)}
+.seg-meta{margin-top:10px;display:block}
+.seg-n{font:700 10px/1 var(--mono);letter-spacing:.14em;color:var(--faint)}
+.seg-label{
+  display:block;margin-top:5px;font-size:12.5px;color:var(--dim);
+  line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.seg-count{display:block;margin-top:3px;font:500 11px/1 var(--mono);color:var(--faint)}
+.seg:hover .seg-label{color:var(--ink)}
+
+/* ---------- controls ---------- */
+.controls{
+  position:sticky;top:0;z-index:30;background:rgba(16,21,28,.93);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+}
+.controls-in{display:flex;gap:12px;align-items:center;padding:12px 0;flex-wrap:wrap}
+.search{
+  flex:1 1 200px;min-width:0;background:var(--panel);color:var(--ink);
+  border:1px solid var(--line);border-radius:4px;padding:9px 12px;
+  font:400 14px/1.4 "Public Sans",sans-serif;
+}
+.search::placeholder{color:var(--faint)}
+.search:focus{border-color:var(--line2);outline:none;box-shadow:0 0 0 2px var(--accent-soft)}
+.segbtns{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.segbtns button{
+  background:var(--panel);color:var(--dim);border:0;padding:9px 15px;cursor:pointer;
+  font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+}
+.segbtns button+button{border-left:1px solid var(--line)}
+.segbtns button[aria-pressed="true"]{background:var(--accent);color:#14181E;font-weight:700}
+.segbtns button:hover:not([aria-pressed="true"]){color:var(--ink)}
+.ghost{
+  background:transparent;color:var(--dim);border:1px solid var(--line);border-radius:4px;
+  padding:9px 13px;cursor:pointer;font:500 12px/1 var(--mono);letter-spacing:.06em;
+}
+.ghost:hover{color:var(--ink);border-color:var(--line2)}
+
+/* ---------- layout ---------- */
+.main{display:grid;grid-template-columns:var(--rail) 1fr;gap:48px;padding:40px 0 100px;align-items:start}
+.rail{position:sticky;top:78px}
+.rail-t{
+  font:500 10px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--faint);margin:0 0 14px;
+}
+.rail a{
+  display:block;padding:9px 0 9px 13px;border-left:2px solid var(--line);
+  color:var(--dim);font-size:13.5px;line-height:1.35;
+}
+.rail a:hover{color:var(--ink);border-left-color:var(--line2);text-decoration:none}
+.rail a.on{color:var(--ink);border-left-color:var(--accent);font-weight:600}
+.rail a span{display:block;font:500 10.5px/1 var(--mono);color:var(--faint);margin-top:4px}
+
+/* ---------- phases ---------- */
+.phase{margin-bottom:68px;scroll-margin-top:78px}
+.phase-head{border-top:1px solid var(--line2);padding-top:18px;margin-bottom:26px}
+.phase-n{font:700 11px/1 var(--mono);letter-spacing:.2em;color:var(--accent)}
+.phase h2{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:700;
+  font-size:clamp(23px,3vw,31px);letter-spacing:-.018em;margin:9px 0 0;
+}
+.phase-note{color:var(--dim);margin:10px 0 0;max-width:68ch;font-size:14.5px}
+.phase-stat{
+  margin-top:16px;display:flex;align-items:center;gap:12px;
+  font:500 11.5px/1 var(--mono);letter-spacing:.08em;color:var(--faint);
+}
+.mini{flex:1;max-width:260px;height:4px;background:var(--panel2);border-radius:2px;overflow:hidden}
+.mini i{display:block;height:100%;width:0;background:var(--accent);transition:width .45s ease}
+
+/* ---------- groups ---------- */
+.group{margin-bottom:6px;border-top:1px solid var(--line)}
+.group-head{
+  width:100%;display:flex;align-items:center;gap:12px;background:none;border:0;
+  padding:13px 2px;cursor:pointer;color:inherit;text-align:left;user-select:none;
+}
+.group-head:hover .group-name{color:var(--accent)}
+.chev{
+  color:var(--faint);font:400 10px/1 var(--mono);width:10px;flex:none;
+  transition:transform .2s ease;
+}
+.group.closed .chev{transform:rotate(-90deg)}
+.group-name{font-weight:600;font-size:14.5px;letter-spacing:-.005em;flex:1;min-width:0}
+.group-name b{color:var(--faint);font-weight:400}
+.group-count{font:500 11px/1 var(--mono);color:var(--faint);flex:none}
+.group.done-all .group-count{color:var(--accent)}
+.items{margin:0 0 14px;padding:0;list-style:none}
+.group.closed .items{display:none}
+
+/* ---------- rows ---------- */
+.row{
+  display:grid;grid-template-columns:20px 1fr auto;gap:13px;align-items:baseline;
+  padding:7px 10px 7px 4px;border-radius:4px;cursor:pointer;
+}
+.row:hover{background:var(--panel)}
+.row.hide{display:none}
+.box{
+  width:15px;height:15px;border:1.5px solid var(--line2);border-radius:3px;
+  position:relative;flex:none;align-self:center;transition:all .16s ease;
+}
+.row:hover .box{border-color:var(--accent)}
+.row.on .box{background:var(--accent);border-color:var(--accent)}
+.row.on .box::after{
+  content:"";position:absolute;left:4.2px;top:.8px;width:4px;height:8px;
+  border:solid #14181E;border-width:0 2px 2px 0;transform:rotate(43deg);
+}
+.t{font-size:14.5px;line-height:1.45;min-width:0}
+.t .nm{color:var(--ink)}
+.t .ds{color:var(--faint);font-size:13px}
+.t .ds::before{content:" — "}
+.row.on .nm,.row.on .ds{color:var(--faint)}
+.row.on{opacity:.52}
+.ext{
+  font:400 11px/1 var(--mono);color:var(--faint);margin-left:7px;
+  opacity:0;transition:opacity .15s ease;
+}
+.row:hover .ext{opacity:1}
+.ext:hover{color:var(--accent)}
+.chip{
+  font:700 9.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 7px;border-radius:3px;flex:none;align-self:center;white-space:nowrap;
+  border:1px solid currentColor;
+}
+.k1{color:var(--d1)}.k2{color:var(--d2)}.k3{color:var(--d3)}.k4{color:var(--d4)}.k5{color:var(--d5)}
+.k0{color:var(--faint);border-color:transparent}
+.row.on .chip{opacity:.5}
+.mark.hide{display:none}
+.mark{
+  margin:16px 0 7px;font:700 10px/1 var(--mono);letter-spacing:.17em;text-transform:uppercase;
+  color:var(--faint);border-left:2px solid var(--line2);padding-left:11px;
+}
+.ms{
+  margin:9px 0 15px 37px;font:500 11.5px/1 var(--mono);letter-spacing:.06em;
+  color:var(--accent);opacity:.82;
+}
+.ms::before{content:"◆ ";opacity:.6}
+
+.empty{color:var(--faint);padding:28px 4px;font-size:14px}
+footer{border-top:1px solid var(--line);padding:32px 0 56px;color:var(--faint);font-size:13px}
+footer a{color:var(--dim)}
+
+@media(max-width:900px){
+  .main{grid-template-columns:1fr;gap:0;padding-top:26px}
+  .rail{position:static;margin-bottom:34px;border-bottom:1px solid var(--line);padding-bottom:18px}
+  .rail-nav{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px}
+  .rail a{border-left:0;border-bottom:2px solid var(--line);padding:7px 13px 9px;white-space:nowrap;flex:none}
+  .rail a.on{border-left:0;border-bottom-color:var(--accent)}
+  .hero{padding:44px 0 32px}
+  .seg-label{display:none}
+}
+@media(max-width:560px){
+  .wrap{padding:0 17px}
+  .row{grid-template-columns:20px 1fr;gap:11px}
+  .chip{grid-column:2;justify-self:start;margin-top:3px}
+  .ext{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Personal training log · since 2026</p>
+    <h1>The long way to <em>OSCP</em>.</h1>
+    <p class="lede">Every room, box and lab on the road from a first TryHackMe login to red team work — in the order it makes sense to do them. Tick things off as you go; progress is saved in this browser.</p>
+
+    <div class="ascent">
+      <div class="ascent-head">
+        <span>The whole road</span>
+        <span><b id="totDone">0</b> of <b id="totAll">0</b> done</span>
+      </div>
+      <div class="bars" id="bars"></div>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="wrap controls-in">
+    <input class="search" id="q" type="search" placeholder="Search 481 rooms, boxes and labs…" aria-label="Search">
+    <div class="segbtns" role="group" aria-label="Filter">
+      <button data-f="all" aria-pressed="true">All</button>
+      <button data-f="todo" aria-pressed="false">To do</button>
+      <button data-f="done" aria-pressed="false">Done</button>
+    </div>
+    <button class="ghost" id="exp" title="Download your progress as a file">Export</button>
+    <button class="ghost" id="imp" title="Restore progress from a file">Import</button>
+  </div>
+</div>
+
+<div class="wrap main">
+  <nav class="rail" aria-label="Sections">
+    <p class="rail-t">Phases</p>
+    <div class="rail-nav" id="rail"></div>
+  </nav>
+  <main id="out"></main>
+</div>
+
+<footer>
+  <div class="wrap">
+    Built from a TryHackMe study roadmap. Machine lists for phases 03 and 04 are curated by
+    <a href="https://buymeacoffee.com/lainkusanagi" rel="noopener">LainKusanagi</a>.
+    Source on <a href="https://github.com/stackcypherx/cyber-security-learning-tracker" rel="noopener">GitHub</a>.
+    Progress lives in this browser only — export it before switching machines.
+  </div>
+</footer>
+
+<input type="file" id="file" accept="application/json" hidden>
+<script>
+const DATA = [{"id":"thm","n":"01","title":"TryHackMe free rooms","note":"The core path. Some rooms TryHackMe has since moved behind Premium — if one is gated, note it and keep the streak going.","groups":[{"name":"🏁 Intro","items":[{"t":"Welcome","n":"Pengenalan dasar platform TryHackMe.","u":"https://tryhackme.com/room/hello","done":true},{"t":"Tutorial","n":"Panduan teknis cara menggunakan tools di THM.","u":"https://tryhackme.com/room/tutorial","done":false},{"t":"OpenVPN","n":"Cara menghubungkan mesin lokal ke jaringan THM.","u":"https://tryhackme.com/room/openvpn","done":false,"ms":"Badge: 3 day streak"},{"t":"Learning Cyber Security","n":"Gambaran umum jalur karier di dunia siber.","u":"https://tryhackme.com/room/beginnerpathintro","done":false},{"t":"Starting Out In Cyber Sec","n":"Langkah awal memulai belajar keamanan siber.","u":"https://tryhackme.com/room/startingoutincybersec","done":false},{"t":"Careers in Cyber","n":"Cari tahu ada role apa saja di dunia keamanan siber","u":"https://tryhackme.com/room/careersincyber","done":false},{"t":"Introductory Researching","n":"Seni mencari informasi dan solusi secara mandiri.","u":"https://tryhackme.com/room/introtoresearch","done":false},{"t":"Regular expressions","n":"Belajar pola karakter (Regex) untuk pencarian data.","u":"https://tryhackme.com/room/catregex","done":false,"ms":"Badge: 7 day streak"}]},{"name":"🐧 Linux","items":[{"t":"Linux Fundamentals Part 1","n":"Dasar-dasar perintah terminal Linux bagian 1.","u":"https://tryhackme.com/room/linuxfundamentalspart1","done":false},{"t":"Linux Strength Training","n":"Pelajari/memperkuat keterampilan baris perintah Linux.","u":"https://tryhackme.com/room/linuxstrengthtraining","done":false},{"t":"Linux Modules","n":"Belajar mengenai modul-modul sistem pada Linux.","u":"https://tryhackme.com/room/linuxmodules","done":false}]},{"name":"🪟 Windows","items":[{"t":"Windows Fundamentals 1","n":"Pengenalan navigasi dan sistem operasi Windows.","u":"https://tryhackme.com/room/windowsfundamentals1xbx","done":false},{"t":"Windows Fundamentals 2","n":"Belajar manajemen sistem dan user di Windows.","u":"https://tryhackme.com/room/windowsfundamentals2x0x","done":false},{"t":"Windows Fundamentals 3","n":"Pengaturan keamanan tingkat lanjut pada Windows.","u":"https://tryhackme.com/room/windowsfundamentals3xzx","done":false}]},{"name":"🛡️ Dasar","items":[{"t":"Pentesting Fundamentals","n":"Memahami teori dan etika penetration testing.","u":"https://tryhackme.com/room/pentestingfundamentals","done":false},{"t":"The Hacker Methodology","n":"Memahami langkah-langkah serangan siber terstruktur.","u":"https://tryhackme.com/room/hackermethodology","done":false},{"t":"Basic Pentesting","n":"Praktek langsung teknik pentesting dasar.","u":"https://tryhackme.com/room/basicpentestingjt","done":false},{"t":"Physical Security Intro","n":"Keamanan dari sisi akses fisik bangunan/server.","u":"https://tryhackme.com/room/physicalsecurityintro","done":false},{"t":"Intro to Cyber Threat Intel","n":"Memperkenalkan intelijen ancaman siber dan topik terkait.","u":"https://tryhackme.com/room/cyberthreatintel","done":false},{"t":"OpenVAS","n":"Penggunaan alat scanning kerentanan otomatis.","u":"https://tryhackme.com/room/openvas","done":false}]},{"name":"📡 Networking","items":[{"t":"Introductory Networking","n":"Belajar model OSI dan protokol dasar internet.","u":"https://tryhackme.com/room/introtonetworking","done":false},{"t":"HTTP in detail","n":"Membedah protokol web HTTP secara mendalam.","u":"https://tryhackme.com/room/httpindetail","done":false},{"t":"DNS in detail","n":"Memahami sistem penamaan domain di internet.","u":"https://tryhackme.com/room/dnsindetail","done":false},{"t":"Dumping Router Firmware","n":"Teknik mengambil data dari firmware perangkat router.","u":"https://tryhackme.com/room/rfirmware","done":false},{"t":"Network Services","n":"Pelajari, identifikasi dan exploit kesalahan konfigurasi jaringan.","u":"https://tryhackme.com/room/networkservices","done":false},{"t":"Network Services 2","n":"Pelajari, identifikasi dan exploit kesalahan konfigurasi jaringan.","u":"https://tryhackme.com/room/networkservices2","done":false}]},{"name":"🔍 Recon","items":[{"t":"Passive Reconnaissance","n":"Mengumpulkan data tanpa interaksi langsung ke target.","u":"https://tryhackme.com/room/passiverecon","done":false},{"t":"Active Reconnaissance","n":"Teknik pengumpulan data dengan menyentuh target.","u":"https://tryhackme.com/room/activerecon","done":false},{"t":"OhSINT","n":"Tantangan mencari informasi dari sumber terbuka.","u":"https://tryhackme.com/room/ohsint","done":false},{"t":"Shodan.io","n":"Menggunakan search engine untuk perangkat IoT.","u":"https://tryhackme.com/room/shodan","done":false},{"t":"Google Dorking","n":"Teknik pencarian canggih menggunakan Google.","u":"https://tryhackme.com/room/googledorking","done":false},{"t":"Sakura Room","n":"OSINT tingkat lanjut dengan skenario investigasi.","u":"https://tryhackme.com/room/sakura","done":false},{"t":"Searchlight - IMINT","n":"Belajar intelijen gambar (Image Intelligence).","u":"https://tryhackme.com/room/searchlightosint","done":false}]},{"name":"🛠️ Tools","items":[{"t":"Metasploit Intro","n":"Dasar-dasar framework eksploitasi terpopuler.","u":"https://tryhackme.com/room/metasploitintro","done":false},{"t":"Nmap","n":"Alat utama untuk scanning port dan layanan.","u":"https://tryhackme.com/room/furthernmap","done":false},{"t":"Burp Suite Repeater","n":"Belajar manipulasi request web secara berulang.","u":"https://tryhackme.com/room/burpsuiterepeater","done":false},{"t":"Hydra","n":"Alat untuk serangan brute force password login.","u":"https://tryhackme.com/room/hydra","done":false},{"t":"ffuf","n":"Alat fuzzing cepat untuk direktori web.","u":"https://tryhackme.com/room/ffuf","done":false},{"t":"RustScan","n":"Alternatif scanner port yang sangat cepat.","u":"https://tryhackme.com/room/rustscan","done":false},{"t":"TShark","n":"Analisis paket data melalui terminal.","u":"https://tryhackme.com/room/tshark","done":false},{"t":"Nessus","n":"Penggunaan vulnerability scanner tingkat industri.","u":"https://tryhackme.com/room/rpnessusredux","done":false},{"t":"SQLMap","n":"Pelajari penggunaan Sqlmap untuk mengeksploitasi aplikasi web.","u":"https://tryhackme.com/room/sqlmap","done":false},{"t":"Intro to OWASP ZAP","n":"Pelajari cara menggunakan OWASP ZAP dari awal. Alternatif BurpSuite.","u":"https://tryhackme.com/room/learnowaspzap","done":false,"ms":"Badge: 30 day streak"}]},{"name":"🐍 Scripting","items":[{"t":"Python Basics","n":"Dasar pemrograman Python untuk cybersecurity.","u":"https://tryhackme.com/room/pythonbasics","done":false},{"t":"Bash Scripting","n":"Belajar otomatisasi perintah di terminal Linux.","u":"https://tryhackme.com/room/bashscripting","done":false},{"t":"Intro PoC Scripting","n":"Membuat skrip pembuktian eksploitasi (Proof of Concept).","u":"https://tryhackme.com/room/intropocscripting","done":false},{"t":"Learn Rust","n":"Pengenalan bahasa pemrograman Rust.","u":"https://tryhackme.com/room/rust","done":false}]},{"name":"🔐 Crypto","items":[{"t":"Cryptography for Dummies","n":"Konsep dasar enkripsi dan deskripsi data.","u":"https://tryhackme.com/room/cryptographyfordummies","done":false},{"t":"Cryptography Basics","n":"Pelajari dasar-dasar kriptografi dan enkripsi simetris.","u":"https://tryhackme.com/room/cryptographybasics","done":false},{"t":"Crack the hash","n":"Belajar memecahkan berbagai jenis kode hash.","u":"https://tryhackme.com/room/crackthehash","done":false},{"t":"Crack The Hash Lvl 2","n":"Tantangan memecahkan hash tingkat menengah.","u":"https://tryhackme.com/room/crackthehashlevel2","done":false}]},{"name":"🖥️ Web","items":[{"t":"Web Application Basics","n":"Pelajari dasar-dasar aplikasi web: HTTP, URL, dll.","u":"https://tryhackme.com/room/webapplicationbasics","done":false},{"t":"Web Application Security","n":"Pelajari web app dan jelajahi beberapa masalah keamanan umum.","u":"https://tryhackme.com/room/introwebapplicationsecurity","done":false},{"t":"Detecting Web Attacks","n":"Jelajahi serangan web dan metode deteksi.","u":"https://tryhackme.com/room/detectingwebattacks","done":false},{"t":"Vulnerabilities 101","n":"Klasifikasi dan pemahaman jenis kerentanan.","u":"https://tryhackme.com/room/vulnerabilities101","done":false},{"t":"SQL Injection","n":"Memahami serangan injeksi pada database.","u":"https://tryhackme.com/room/sqlinjectionlm","done":false},{"t":"OWASP Top 10 2025: IAAA Failures","n":"Pelajari tentang A01, A07, dan A09 serta bagaimana kaitannya dengan kegagalan dalam model IAAA terapan.","u":"https://tryhackme.com/room/owasptopten2025one","done":false},{"t":"OWASP Top 10 2025: Application Design Flaws","n":"Pelajari tentang A02, A03, A06, dan A10 serta bagaimana kaitannya dengan kekurangan desain pada aplikasi.","u":"https://tryhackme.com/room/owasptopten2025two","done":false},{"t":"OWASP Top 10 2025: Insecure Data Handling","n":"Pelajari tentang A04, A05, dan A08 yang berkaitan dengan penanganan data yang tidak aman.","u":"https://tryhackme.com/room/owasptopten2025three","done":false},{"t":"OWASP Juice Shop","n":"Lab interaktif untuk praktek eksploitasi web.","u":"https://tryhackme.com/room/owaspjuiceshop","done":false}]},{"name":"📱 Mobile","items":[{"t":"Android Hacking 101","n":"Dasar-dasar keamanan dan peretasan aplikasi Android.","u":"https://tryhackme.com/room/androidhacking101","done":false},{"t":"Mobile Malware Analysis","n":"Pelajari dan praktikkan analisis malware seluler.","u":"https://tryhackme.com/room/mma","done":false}]},{"name":"📶 Wi-Fi","items":[{"t":"Wifi Hacking 101","n":"Pengenalan cara kerja dan kelemahan jaringan Wi-Fi.","u":"https://tryhackme.com/room/wifihacking101","done":false}]},{"name":"⬆️ PrivEsc","items":[{"t":"Linux Privilege Escalation","n":"Teknik meningkatkan hak akses dari user ke root di Linux.","u":"https://tryhackme.com/room/linprivesc","done":false},{"t":"Windows PrivEsc","n":"Teknik meningkatkan hak akses di sistem Windows.","u":"https://tryhackme.com/room/windows10privesc","done":false},{"t":"Sudo Security Bypass","n":"Mengeksploitasi izin sudo yang salah konfigurasi.","u":"https://tryhackme.com/room/sudovulnsbypass","done":false}]},{"name":"🏰 AD","items":[{"t":"Attacktive Directory","n":"Eksploitasi dasar Active Directory pada Windows.","u":"https://tryhackme.com/room/attacktivedirectory","done":false},{"t":"Post-Exploitation Basics","n":"Hal-hal yang dilakukan setelah berhasil masuk ke sistem.","u":"https://tryhackme.com/room/postexploit","done":false}]},{"name":"🧪 Malware","items":[{"t":"History of Malware","n":"Evolusi perangkat lunak berbahaya dari masa ke masa.","u":"https://tryhackme.com/room/historyofmalware","done":false},{"t":"Basic Malware RE","n":"Praktik dasar membedah program malware.","u":"https://tryhackme.com/room/basicmalwarere","done":false}]},{"name":"🚩 Easy CTF","items":[{"t":"RootMe","n":"Mesin Linux tingkat mudah dengan celah upload web.","u":"https://tryhackme.com/room/rrootme","done":false},{"t":"Pickle Rick","n":"Room bertema Rick and Morty, fokus pada web dan sistem.","u":"https://tryhackme.com/room/picklerick","done":false},{"t":"Simple CTF","n":"Latihan mengeksploitasi CMS versi lama.","u":"https://tryhackme.com/room/easyctf","done":false},{"t":"Bounty Hacker","n":"Praktek pengintaian dan brute force sederhana.","u":"https://tryhackme.com/room/cowboyhacker","done":false},{"t":"LazyAdmin","n":"Eksploitasi web admin yang memiliki kelemahan dasar.","u":"https://tryhackme.com/room/lazyadmin","done":false},{"t":"Wgel CTF","n":"Fokus pada eksploitasi sistem melalui direktori tersembunyi.","u":"https://tryhackme.com/room/wgelctf","done":false},{"t":"Kenobi","n":"Eksploitasi layanan Samba dan ProFTPD.","u":"https://tryhackme.com/room/kenobi","done":false},{"t":"Ice","n":"Eksploitasi mesin Windows melalui layanan pihak ketiga.","u":"https://tryhackme.com/room/ice","done":false},{"t":"Blue","n":"Mengeksploitasi kerentanan EternalBlue (MS17-010).","u":"https://tryhackme.com/room/blue","done":false},{"t":"Vulnversity","n":"Belajar pengintaian aktif dan eksploitasi upload file.","u":"https://tryhackme.com/room/vulnversity","done":false},{"t":"Agent Sudo","n":"Tantangan web dan kriptografi sederhana.","u":"https://tryhackme.com/room/agentsudoctf","done":false},{"t":"Startup","n":"Fokus pada pengumpulan data dan privesc dasar.","u":"https://tryhackme.com/room/startup","done":false},{"t":"Chill Hack","n":"Latihan komprehensif dari web hingga root.","u":"https://tryhackme.com/room/chillhack","done":false}]},{"name":"🏁 AoC","items":[{"t":"Advent of Cyber 2025","n":"Event tahunan sebelum perayaan Natal yang seru.","u":"https://tryhackme.com/adventofcyber25","done":false}]}],"count":84},{"id":"plat","n":"02","title":"Other platforms","note":"Open this up after the free rooms and the Web section — unless you’re going straight for Web3.","groups":[{"name":"Red team","items":[{"t":"PortSwigger","u":"https://portswigger.net/web-security/learning-paths","n":"Free"},{"t":"HackTheBox","u":null,"n":"Free/Paid"},{"t":"PentesterLab","u":null,"n":"Paid"}]},{"name":"Blue team","items":[{"t":"LetsDefend","u":null,"n":"Paid"}]},{"name":"Specialization","items":[{"t":"API Security","u":"https://www.apisecuniversity.com/","n":"Free"},{"t":"Web3 Developer","u":"https://learnweb3.io/","n":"Free"},{"t":"Smart Contract Security","u":"https://updraft.cyfrin.io/courses/security","n":"Free"}]}],"count":7},{"id":"oscp","n":"03","title":"OSCP practice machines","note":"Curated by LainKusanagi. Overlaps the TJNull list but filtered to PEN-200 scope. Practice, not a replacement for the course.","groups":[{"name":"Hack The Box › Linux","items":[{"t":"Analytics","d":"Easy","k":2},{"t":"Bashed","d":"Easy","k":2},{"t":"BoardLight","d":"Easy","k":2},{"t":"Broker","d":"Easy","k":2},{"t":"Busqueda","d":"Easy","k":2},{"t":"Codify","d":"Easy","k":2},{"t":"Cozyhosting","d":"Easy","k":2},{"t":"Devvortex","d":"Easy","k":2},{"t":"Dog","d":"Easy","k":2},{"t":"Keeper","d":"Easy","k":2},{"t":"Knife","d":"Easy","k":2},{"t":"Nibbles","d":"Easy","k":2},{"t":"Precious","d":"Easy","k":2},{"t":"UnderPass","d":"Easy","k":2},{"t":"Builder","d":"Medium","k":3},{"t":"Editorial","d":"Medium","k":3},{"t":"Help","d":"Medium","k":3},{"t":"Irked","d":"Medium","k":3},{"t":"Jarvis","d":"Medium","k":3},{"t":"Linkvortex","d":"Medium","k":3},{"t":"Magic","d":"Medium","k":3},{"t":"Mentor","d":"Medium","k":3},{"t":"Monitored","d":"Medium","k":3},{"t":"Networked","d":"Medium","k":3},{"t":"Nineveh","d":"Medium","k":3},{"t":"OpenAdmin","d":"Medium","k":3},{"t":"Pandora","d":"Medium","k":3},{"t":"Pilgrimage","d":"Medium","k":3},{"t":"Poison","d":"Medium","k":3},{"t":"Popcorn","d":"Medium","k":3},{"t":"Sea","d":"Medium","k":3},{"t":"Solidstate","d":"Medium","k":3},{"t":"Sunday","d":"Medium","k":3},{"t":"Swagshop","d":"Medium","k":3},{"t":"Tabby","d":"Medium","k":3},{"t":"Tartarsauce","d":"Medium","k":3},{"t":"UpDown","d":"Medium","k":3},{"t":"Usage","d":"Medium","k":3}]},{"name":"Hack The Box › Windows","items":[{"t":"Markup","d":"Very Easy","k":1},{"t":"Jerry","d":"Easy","k":2},{"t":"Netmon","d":"Easy","k":2},{"t":"Buff","d":"Easy","k":2},{"t":"Servmon","d":"Medium","k":3},{"t":"Chatterbox","d":"Medium","k":3},{"t":"Jeeves","d":"Medium","k":3},{"t":"Sniper","d":"Medium","k":3},{"t":"Querier","d":"Medium","k":3},{"t":"Giddy","d":"Medium","k":3},{"t":"Bounty","d":"Medium","k":3},{"t":"Artic","d":"Medium","k":3},{"t":"Remote","d":"Medium","k":3},{"t":"Love","d":"Medium","k":3},{"t":"Secnotes","d":"Medium","k":3},{"t":"Access","d":"Medium","k":3},{"t":"Mailing","d":"Medium","k":3},{"t":"Heist","d":"Medium","k":3}]},{"name":"Hack The Box › Active Directory & networks","items":[{"t":"Return","d":"Easy","k":2},{"t":"Cicada","d":"Easy","k":2},{"t":"Active","d":"Medium","k":3},{"t":"Forest","d":"Medium","k":3},{"t":"Sauna","d":"Medium","k":3},{"t":"Monteverde","d":"Medium","k":3},{"t":"Timelapse","d":"Medium","k":3},{"t":"Escape","d":"Medium","k":3},{"t":"Flight","d":"Hard","k":4},{"t":"Blackfield","d":"Hard","k":4},{"t":"TheFrizz (harder)","d":"Hard","k":4},{"mark":"Assumed Breach Scenarios"},{"t":"Administrator","d":"Medium","k":3},{"t":"EscapeTwo","d":"Medium","k":3},{"t":"Certified (harder)","d":"Medium","k":3},{"t":"Puppy (harder)","d":"Medium","k":3},{"mark":"ProLabs"},{"t":"Dante","d":"Beginner","k":2},{"t":"Zephyr (harder)","d":"Intermediate","k":3},{"mark":"AWS (Not in the exam)"},{"t":"Epsilon","d":"Medium","k":3},{"t":"Gobox","d":"Medium","k":3},{"t":"Bucket","d":"Medium","k":3}]},{"name":"TryHackMe › Linux","items":[{"t":"Thompson","d":"Easy","k":2},{"t":"Kenobi","d":"Easy","k":2},{"t":"GameZone","d":"Easy","k":2},{"t":"Skynet","d":"Easy","k":2},{"t":"Lazy admin","d":"Easy","k":2},{"t":"Tomghost","d":"Easy","k":2},{"t":"Rootme","d":"Easy","k":2},{"t":"Silver Platter","d":"Easy","k":2},{"t":"Mr Robot","d":"Medium","k":3},{"t":"CMesS","d":"Medium","k":3},{"t":"Ultratech","d":"Medium","k":3},{"t":"Zeno","d":"Medium","k":3},{"t":"Boiler CTF","d":"Medium","k":3},{"t":"Wonderland","d":"Medium","k":3},{"t":"Daily bugle","d":"Hard","k":4},{"t":"Internal","d":"Hard","k":4}]},{"name":"TryHackMe › Windows","items":[{"t":"Steel Mountain","d":"Easy","k":2},{"t":"Alfred","d":"Easy","k":2},{"t":"Blueprint","d":"Easy","k":2},{"t":"Anthem","d":"Easy","k":2},{"t":"Cyberlens","d":"Easy","k":2},{"t":"Relevant","d":"Medium","k":3},{"t":"Hackpark","d":"Medium","k":3},{"t":"Weasel","d":"Medium","k":3},{"t":"AllSignsPoint2Pwnage","d":"Medium","k":3},{"t":"Hack Smarter Security (harder)","d":"Medium","k":3},{"t":"Year of the Owl","d":"Hard","k":4},{"t":"Retro","d":"Hard","k":4}]},{"name":"TryHackMe › Active Directory & networks","items":[{"t":"Attacking Kerberos","d":"Easy","k":2},{"t":"Wreath","d":"Easy","k":2},{"t":"Attacktive Directory","d":"Medium","k":3},{"t":"Vulnnet: Active","d":"Medium","k":3},{"t":"Reset","d":"Hard","k":4},{"t":"Enterprise","d":"Hard","k":4},{"t":"Ledger","d":"Hard","k":4},{"mark":"Assumed Breach Scenarios"},{"t":"Corp","d":"Easy","k":2},{"t":"Lateral Movement and Pivoting","d":"Easy","k":2},{"t":"Exploiting Active Directory","d":"Medium","k":3}]},{"name":"TryHackMe › Other rooms & paths","items":[{"t":"Git Happens","d":"Easy","k":2},{"t":"SQL Injection Lab","d":"Easy","k":2},{"t":"Linux Privilege Escalation","d":"Medium","k":3},{"t":"Windows Privilege Escalation","d":"Medium","k":3},{"t":"Git Happens","d":"Easy","k":2},{"t":"NahamStore","d":"Medium","k":3},{"mark":"Recommended paths"},{"t":"Cyber Security 101","d":"Easy","k":2},{"t":"Jr Penetration Tester","d":"Intermediate","k":3},{"t":"Offensive Pentesting","d":"Intermediate","k":3}]},{"name":"Proving Grounds Practice › Linux","items":[{"t":"Levram","d":"Easy","k":2},{"t":"ClamAV","d":"Intermediate","k":3},{"t":"Pelican","d":"Intermediate","k":3},{"t":"Payday","d":"Intermediate","k":3},{"t":"Snookums","d":"Intermediate","k":3},{"t":"Bratarina","d":"Intermediate","k":3},{"t":"Nibbles","d":"Intermediate","k":3},{"t":"ZenPhoto","d":"Intermediate","k":3},{"t":"Cockpit","d":"Intermediate","k":3},{"t":"Extplorer","d":"Intermediate","k":3},{"t":"Walla","d":"Intermediate","k":3},{"t":"PC","d":"Intermediate","k":3},{"t":"Sorcerer","d":"Intermediate","k":3},{"t":"Astronaut","d":"Intermediate","k":3},{"t":"Bullybox","d":"Intermediate","k":3},{"t":"Exfiltrated","d":"Intermediate","k":3},{"t":"QuackerJack","d":"Intermediate","k":3},{"t":"Wombo","d":"Intermediate","k":3},{"t":"Flu","d":"Intermediate","k":3},{"t":"Mzeeav","d":"Intermediate","k":3},{"t":"Ochima","d":"Intermediate","k":3},{"t":"SpiderSociety","d":"Intermediate","k":3},{"t":"Pebbles","d":"Hard","k":4},{"t":"Nukem","d":"Hard","k":4},{"t":"Sybaris","d":"Hard","k":4},{"t":"Peppo","d":"Hard","k":4},{"t":"Fanatastic","d":"Hard","k":4},{"t":"Roquefort","d":"Hard","k":4},{"t":"LaVita","d":"Hard","k":4},{"t":"Xposedapi","d":"Hard","k":4},{"t":"Fired","d":"Hard","k":4},{"t":"Vmdak","d":"Hard","k":4},{"t":"Zab","d":"Hard","k":4},{"t":"Hetemit","d":"Very Hard","k":5},{"t":"Clue","d":"Very Hard","k":5},{"t":"Postfish","d":"Very Hard","k":5},{"t":"Hawat","d":"Very Hard","k":5},{"t":"Apex","d":"Very Hard","k":5},{"t":"Hunit","d":"Very Hard","k":5},{"t":"Readys","d":"Very Hard","k":5},{"t":"Marketing","d":"Very Hard","k":5},{"t":"Zipper","d":"Very Hard","k":5},{"t":"Scrutiny","d":"Very Hard","k":5},{"t":"SPX","d":"Very Hard","k":5},{"t":"Mantis","d":"Very Hard","k":5},{"t":"BitForge","d":"Very Hard","k":5},{"t":"WallpaperHub","d":"Very Hard","k":5}]},{"name":"Proving Grounds Practice › Windows","items":[{"t":"Kevin","d":"Easy","k":2},{"t":"Internal","d":"Easy","k":2},{"t":"Algernon","d":"Easy","k":2},{"t":"Slort","d":"Intermediate","k":3},{"t":"Jacko","d":"Hard","k":4},{"t":"Craft","d":"Hard","k":4},{"t":"Squid","d":"Hard","k":4},{"t":"Nickel","d":"Hard","k":4},{"t":"MedJed","d":"Hard","k":4},{"t":"Billyboss","d":"Hard","k":4},{"t":"Shenzi","d":"Hard","k":4},{"t":"AuthBy","d":"Hard","k":4},{"t":"DVR4","d":"Hard","k":4},{"t":"Mice","d":"Hard","k":4},{"t":"Fish","d":"Hard","k":4},{"t":"Hepet","d":"Very Hard","k":5},{"t":"Monster","d":"Very Hard","k":5}]},{"name":"Proving Grounds Practice › Windows Active Directory","items":[{"t":"Hutch","d":"Hard","k":4},{"t":"Vault","d":"Hard","k":4},{"t":"Access","d":"Very Hard","k":5},{"t":"Resourced","d":"Very Hard","k":5},{"t":"Nagoya","d":"Very Hard","k":5},{"t":"Hokkaido","d":"Very Hard","k":5},{"mark":"AWS (Not in the exam)"},{"t":"Pathway","d":"Hard","k":4}]},{"name":"Virtual Hacking Labs › Linux","items":[{"t":"Techblog","d":null,"k":0},{"t":"Backupadmin V2","d":null,"k":0},{"t":"Web01-Dev V2","d":null,"k":0},{"t":"Web01-Prd V2","d":null,"k":0},{"t":"Forum","d":null,"k":0},{"t":"Quick","d":null,"k":0},{"t":"Tiki","d":null,"k":0},{"t":"Helpdesk V2","d":null,"k":0},{"t":"VPS1723 V2","d":null,"k":0},{"t":"CMS02 V2","d":null,"k":0},{"t":"Records","d":null,"k":0},{"t":"Trails","d":null,"k":0},{"t":"Dolphin V2","d":null,"k":0},{"t":"Crash","d":null,"k":0},{"t":"Natural","d":null,"k":0},{"t":"Mantis","d":null,"k":0},{"t":"Fed V2","d":null,"k":0},{"t":"CMS01","d":null,"k":0},{"t":"Tracking","d":null,"k":0},{"t":"JS01","d":null,"k":0},{"t":"PBX","d":null,"k":0},{"t":"Code V2","d":null,"k":0},{"t":"Teamspeak","d":null,"k":0},{"t":"CMS101","d":null,"k":0},{"t":"FW01","d":null,"k":0},{"t":"Core","d":null,"k":0},{"t":"Websrv01","d":null,"k":0},{"t":"Mon02","d":null,"k":0},{"t":"Graphs01","d":null,"k":0},{"t":"PM V2","d":null,"k":0},{"t":"Tracker","d":null,"k":0}]},{"name":"Virtual Hacking Labs › Windows","items":[{"t":"Steven","d":null,"k":0},{"t":"Aaron","d":null,"k":0},{"t":"Anthony","d":null,"k":0},{"t":"Jennifer","d":null,"k":0},{"t":"WinAS01","d":null,"k":0},{"t":"AS45","d":null,"k":0},{"t":"Trace","d":null,"k":0},{"t":"React","d":null,"k":0}]},{"name":"Proving Grounds Play › Linux","items":[{"t":"Gaara","d":"Easy","k":2},{"t":"FunboxEasyEnum","d":"Intermediate","k":3},{"t":"Loly","d":"Intermediate","k":3},{"t":"Potato","d":"Intermediate","k":3},{"t":"BBScute","d":"Intermediate","k":3},{"t":"Amaterasu","d":"Hard","k":4},{"t":"Stapler","d":"Hard","k":4},{"t":"Blogger","d":"Hard","k":4}]},{"name":"VulnLab › Linux","items":[{"t":"Sync","d":"Easy","k":2},{"t":"Data","d":"Easy","k":2},{"t":"Build","d":"Easy","k":2},{"t":"Forgotten","d":"Easy","k":2},{"t":"Bamboo","d":"Medium","k":3}]},{"name":"VulnLab › Windows","items":[{"t":"Escape","d":"Easy","k":2},{"t":"Lock","d":"Easy","k":2},{"t":"Job","d":"Medium","k":3},{"t":"Job2","d":"Hard","k":4}]},{"name":"VulnLab › Active Directory & networks","items":[{"t":"Baby","d":"Easy","k":2},{"t":"Baby2","d":"Medium","k":3},{"t":"Breach","d":"Medium","k":3},{"t":"Sweep","d":"Medium","k":3},{"t":"Sendai","d":"Medium","k":3},{"mark":"Chains"},{"t":"Trusted","d":"Easy","k":2},{"t":"Hybrid","d":"Easy","k":2},{"t":"Reflection","d":"Medium","k":3},{"t":"Lustrous","d":"Hard","k":4},{"mark":"Assumed Breach Scenarios"},{"t":"Heron (Chain)","d":"Medium","k":3}]}],"count":260},{"id":"rt","n":"04","title":"Red teaming","note":"Past OSCP: deeper Active Directory, OSINT, evasion, C2, client-side. Overlaps PEN-300 (OSEP) without being limited to it.","groups":[{"name":"Hack The Box › Linux","items":[{"t":"ScriptKiddie","d":null,"k":0},{"t":"Blunder","d":null,"k":0},{"t":"Solidstate","d":null,"k":0},{"t":"Delivery","d":null,"k":0},{"t":"Perfection","d":null,"k":0},{"t":"Alert","d":null,"k":0},{"t":"Mailroom","d":null,"k":0},{"t":"Luke","d":null,"k":0},{"t":"Trickster","d":null,"k":0},{"t":"Cat","d":null,"k":0},{"t":"Backfire","d":null,"k":0},{"t":"Cypher","d":null,"k":0},{"mark":"AWS (Wip)"},{"t":"Epsilon","d":null,"k":0},{"t":"Gobox","d":null,"k":0},{"t":"Bucket","d":null,"k":0},{"t":"Stacked","d":null,"k":0},{"t":"Sink","d":null,"k":0}]},{"name":"Hack The Box › Windows","items":[{"t":"Querier","d":null,"k":0},{"t":"Aero","d":null,"k":0},{"t":"Mailing","d":null,"k":0},{"t":"Atom","d":null,"k":0},{"t":"Compiled","d":null,"k":0},{"t":"Acute","d":null,"k":0},{"t":"Sniper","d":null,"k":0},{"t":"Visual","d":null,"k":0},{"t":"Giddy","d":null,"k":0},{"t":"Control","d":null,"k":0},{"t":"Heist","d":null,"k":0},{"t":"Worker","d":null,"k":0}]},{"name":"Hack The Box › Active Directory & networks","items":[{"t":"Sauna","d":null,"k":0},{"t":"Forest","d":null,"k":0},{"t":"Intelligence","d":null,"k":0},{"t":"Cascade","d":null,"k":0},{"t":"Monteverde","d":null,"k":0},{"t":"Blackfield","d":null,"k":0},{"t":"Fuse","d":null,"k":0},{"t":"Return","d":null,"k":0},{"t":"Timelapse","d":null,"k":0},{"t":"StreamIO","d":null,"k":0},{"t":"Flight","d":null,"k":0},{"t":"Office","d":null,"k":0},{"t":"Freelancer","d":null,"k":0},{"t":"Blazorized","d":null,"k":0},{"t":"Authority","d":null,"k":0},{"t":"Manager","d":null,"k":0},{"t":"Escape","d":null,"k":0},{"t":"Scrambled","d":null,"k":0},{"t":"Resolute","d":null,"k":0},{"t":"Mantis","d":null,"k":0},{"t":"Reel","d":null,"k":0},{"t":"Outdated","d":null,"k":0},{"t":"Certified (Assumed breach)","d":null,"k":0},{"t":"Administrator (Assumed breach)","d":null,"k":0},{"t":"Vintage (Assumed Breach)","d":null,"k":0},{"t":"Search","d":null,"k":0},{"t":"Axlle","d":null,"k":0},{"t":"Hospital (Windows/Linux)","d":null,"k":0},{"t":"EscapeTwo (Assumed breach)","d":null,"k":0},{"t":"TheFrizz","d":null,"k":0},{"t":"Haze","d":null,"k":0},{"t":"Scepter","d":null,"k":0},{"t":"Puppy (Assumed breach)","d":null,"k":0},{"mark":"ProLabs"},{"t":"Zephyr","d":null,"k":0}]},{"name":"TryHackMe › Linux","items":[{"t":"Mr Robot","d":null,"k":0},{"t":"Grep (OSINT)","d":null,"k":0}]},{"name":"TryHackMe › Windows","items":[{"t":"Year of the Owl","d":null,"k":0},{"t":"Blaster","d":null,"k":0},{"t":"Weasel","d":null,"k":0},{"t":"Hack Smarter Security","d":null,"k":0}]},{"name":"TryHackMe › Active Directory & networks","items":[{"t":"Attacktive Directory","d":null,"k":0},{"t":"Attacking Kerberos","d":null,"k":0},{"t":"Wreath Network","d":null,"k":0},{"t":"Corp","d":null,"k":0},{"t":"Reset","d":null,"k":0},{"t":"Vulnnet: Active","d":null,"k":0},{"t":"Enterprise","d":null,"k":0},{"t":"Ledger","d":null,"k":0}]},{"name":"TryHackMe › Other rooms & paths","items":[{"t":"Red Teaming Learning Path","d":null,"k":0},{"t":"Cyber Defense Learning Path","d":null,"k":0},{"t":"OhSINT","d":null,"k":0}]},{"name":"Proving Grounds Practice › Linux","items":[{"t":"Postfish","d":null,"k":0},{"t":"Thor","d":null,"k":0},{"t":"Megavolt","d":null,"k":0}]},{"name":"Proving Grounds Practice › Windows","items":[{"t":"Kevin","d":null,"k":0},{"t":"Butch","d":null,"k":0},{"t":"Craft","d":null,"k":0},{"t":"Craft2","d":null,"k":0},{"t":"Hepet","d":null,"k":0},{"t":"Vector","d":null,"k":0},{"t":"Symbolic","d":null,"k":0},{"t":"Monster","d":null,"k":0},{"t":"Compromised","d":null,"k":0}]},{"name":"Proving Grounds Practice › Windows Active Directory","items":[{"t":"Access","d":null,"k":0},{"t":"Resourced","d":null,"k":0},{"t":"Nagoya","d":null,"k":0},{"t":"Hokkaido","d":null,"k":0},{"t":"Heist","d":null,"k":0},{"t":"Nara","d":null,"k":0},{"t":"Vault","d":null,"k":0},{"t":"Hutch","d":null,"k":0},{"t":"Kyoto (has Buffer overflow)","d":null,"k":0},{"mark":"AWS"},{"t":"Pathway","d":null,"k":0}]},{"name":"VulnLab › Linux","items":[{"t":"Forgotten","d":null,"k":0},{"t":"Down","d":null,"k":0},{"t":"Bamboo","d":null,"k":0}]},{"name":"VulnLab › Windows","items":[{"t":"Escape","d":null,"k":0},{"t":"Job","d":null,"k":0},{"t":"Job2","d":null,"k":0},{"t":"Lock","d":null,"k":0},{"t":"Media","d":null,"k":0}]},{"name":"VulnLab › Active Directory & networks","items":[{"t":"Baby","d":null,"k":0},{"t":"Baby2","d":null,"k":0},{"t":"Breach","d":null,"k":0},{"t":"Phantom","d":null,"k":0},{"t":"Sweep","d":null,"k":0},{"t":"Delegate","d":null,"k":0},{"t":"Sendai","d":null,"k":0},{"t":"Retro","d":null,"k":0},{"t":"Retro2","d":null,"k":0},{"t":"Bruno","d":null,"k":0},{"t":"Lustrous2","d":null,"k":0},{"t":"Shibuya","d":null,"k":0},{"mark":"Chains"},{"t":"Trusted","d":null,"k":0},{"t":"Reflection","d":null,"k":0},{"t":"Hybrid","d":null,"k":0},{"t":"Lustrous","d":null,"k":0},{"t":"Heron (Assumed breach)","d":null,"k":0},{"t":"Tengu","d":null,"k":0},{"t":"Puppet (Assumed breach with C2)","d":null,"k":0},{"mark":"Red Teaming Labs"},{"t":"Ifrit","d":null,"k":0}]}],"count":130}];
+const KEY = "cslt.v1";
+const DL = {1:"Very easy",2:"Easy",3:"Medium",4:"Hard",5:"Very hard"};
+
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){ state = {}; }
+
+/* stable id per item */
+DATA.forEach(p => p.groups.forEach((g,gi) => g.items.forEach((it,ii) => {
+  if (!it.mark) {
+    it.id = p.id + "." + gi + "." + ii;
+    if (it.done && !(it.id in state)) state[it.id] = true;
+  }
+})));
+
+const isOn = it => !!state[it.id];
+const save = () => localStorage.setItem(KEY, JSON.stringify(state));
+const real = g => g.items.filter(i => !i.mark);
+const esc = s => (s||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const gname = n => { const [a,b] = n.split(" › "); return b ? `<b>${esc(a)} ›</b> ${esc(b)}` : esc(a); };
+
+/* ---------- build ---------- */
+const out = document.getElementById("out");
+out.innerHTML = DATA.map(p => `
+  <section class="phase" id="${p.id}">
+    <div class="phase-head">
+      <div class="phase-n">PHASE ${p.n}</div>
+      <h2>${esc(p.title)}</h2>
+      <p class="phase-note">${esc(p.note)}</p>
+      <div class="phase-stat">
+        <span class="mini"><i data-bar="${p.id}"></i></span>
+        <span data-stat="${p.id}"></span>
+      </div>
+    </div>
+    ${p.groups.map((g,gi) => `
+      <div class="group" data-g="${p.id}.${gi}">
+        <button class="group-head" aria-expanded="true">
+          <span class="chev">▼</span>
+          <span class="group-name">${gname(g.name)}</span>
+          <span class="group-count" data-gc="${p.id}.${gi}"></span>
+        </button>
+        <ul class="items">
+          ${g.items.map(it => it.mark
+            ? `<li class="mark">${esc(it.mark)}</li>`
+            : `<li class="row" data-id="${it.id}" data-k="${esc((it.t+" "+(it.n||"")).toLowerCase())}" tabindex="0" role="checkbox" aria-checked="false">
+                 <span class="box"></span>
+                 <span class="t"><span class="nm">${esc(it.t)}</span>${
+                    it.n ? `<span class="ds">${esc(it.n)}</span>` : ""}${
+                    it.u ? `<a class="ext" href="${esc(it.u)}" target="_blank" rel="noopener" title="Open">↗</a>` : ""}</span>
+                 <span class="chip k${it.k||0}">${it.d ? esc(it.d) : (it.k===undefined?"":"")}</span>
+               </li>${it.ms ? `<li class="ms">${esc(it.ms)}</li>` : ""}`
+          ).join("")}
+        </ul>
+      </div>`).join("")}
+  </section>`).join("");
+
+/* rail + ascent */
+document.getElementById("rail").innerHTML = DATA.map(p =>
+  `<a href="#${p.id}" data-r="${p.id}"><b>${esc(p.title)}</b><span data-rc="${p.id}"></span></a>`).join("");
+document.getElementById("bars").innerHTML = DATA.map(p =>
+  `<a class="seg" href="#${p.id}" style="flex:${p.count} 1 0" title="${esc(p.title)}">
+     <span class="seg-track"><span class="seg-fill" data-seg="${p.id}"></span></span>
+     <span class="seg-meta">
+       <span class="seg-n">${p.n}</span>
+       <span class="seg-label">${esc(p.title)}</span>
+       <span class="seg-count" data-sc="${p.id}"></span>
+     </span>
+   </a>`).join("");
+document.getElementById("totAll").textContent = DATA.reduce((a,p)=>a+p.count,0);
+
+/* ---------- render state ---------- */
+function paint(){
+  let done = 0;
+  DATA.forEach(p => {
+    let pd = 0;
+    p.groups.forEach((g,gi) => {
+      const items = real(g), d = items.filter(isOn).length;
+      pd += d;
+      const el = document.querySelector(`[data-gc="${p.id}.${gi}"]`);
+      if (el) el.textContent = d + "/" + items.length;
+      const grp = document.querySelector(`[data-g="${p.id}.${gi}"]`);
+      if (grp) grp.classList.toggle("done-all", d === items.length && items.length > 0);
+    });
+    done += pd;
+    const pct = p.count ? (pd / p.count * 100) : 0;
+    document.querySelector(`[data-seg="${p.id}"]`).style.width = pct + "%";
+    document.querySelector(`[data-bar="${p.id}"]`).style.width = pct + "%";
+    document.querySelector(`[data-sc="${p.id}"]`).textContent = pd + "/" + p.count;
+    document.querySelector(`[data-rc="${p.id}"]`).textContent = pd + " / " + p.count;
+    document.querySelector(`[data-stat="${p.id}"]`).textContent =
+      `${pd} of ${p.count} complete · ${Math.round(pct)}%`;
+  });
+  document.getElementById("totDone").textContent = done;
+  document.querySelectorAll(".row").forEach(r => {
+    const on = !!state[r.dataset.id];
+    r.classList.toggle("on", on);
+    r.setAttribute("aria-checked", on);
+  });
+}
+
+/* ---------- interactions ---------- */
+function toggle(row){
+  const id = row.dataset.id;
+  state[id] ? delete state[id] : state[id] = true;
+  save(); paint(); filter();
+}
+out.addEventListener("click", e => {
+  if (e.target.closest(".ext")) return;
+  const head = e.target.closest(".group-head");
+  if (head){
+    const g = head.closest(".group");
+    g.classList.toggle("closed");
+    head.setAttribute("aria-expanded", !g.classList.contains("closed"));
+    return;
+  }
+  const row = e.target.closest(".row");
+  if (row) toggle(row);
+});
+out.addEventListener("keydown", e => {
+  const row = e.target.closest(".row");
+  if (row && (e.key === " " || e.key === "Enter")){ e.preventDefault(); toggle(row); }
+});
+
+let mode = "all", term = "";
+function filter(){
+  DATA.forEach(p => p.groups.forEach((g,gi) => {
+    let vis = 0;
+    const grp = document.querySelector(`[data-g="${p.id}.${gi}"]`);
+    grp.querySelectorAll(".row").forEach(r => {
+      const on = !!state[r.dataset.id];
+      const okMode = mode === "all" || (mode === "done") === on;
+      const okTerm = !term || r.dataset.k.includes(term);
+      const show = okMode && okTerm;
+      r.classList.toggle("hide", !show);
+      if (show) vis++;
+    });
+    grp.querySelectorAll(".mark").forEach(m => m.classList.toggle("hide", !!term));
+    grp.style.display = vis ? "" : "none";
+    if (term && vis) grp.classList.remove("closed");
+  }));
+  DATA.forEach(p => {
+    const sec = document.getElementById(p.id);
+    const any = [...sec.querySelectorAll(".group")].some(g => g.style.display !== "none");
+    sec.style.display = any ? "" : "none";
+  });
+  const none = DATA.every(p => document.getElementById(p.id).style.display === "none");
+  let msg = document.getElementById("nores");
+  if (none && !msg){
+    msg = document.createElement("p");
+    msg.id = "nores"; msg.className = "empty";
+    msg.textContent = "Nothing matches that. Try a different search or filter.";
+    out.append(msg);
+  } else if (!none && msg) msg.remove();
+}
+document.getElementById("q").addEventListener("input", e => {
+  term = e.target.value.trim().toLowerCase(); filter();
+});
+document.querySelectorAll(".segbtns button").forEach(b =>
+  b.addEventListener("click", () => {
+    mode = b.dataset.f;
+    document.querySelectorAll(".segbtns button").forEach(x =>
+      x.setAttribute("aria-pressed", x === b));
+    filter();
+  }));
+
+/* export / import */
+document.getElementById("exp").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(state,null,1)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "learning-tracker-progress.json";
+  a.click(); URL.revokeObjectURL(a.href);
+});
+document.getElementById("imp").addEventListener("click", () => document.getElementById("file").click());
+document.getElementById("file").addEventListener("change", e => {
+  const f = e.target.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try { state = JSON.parse(rd.result) || {}; save(); paint(); filter(); }
+    catch(err){ alert("That file could not be read as saved progress."); }
+  };
+  rd.readAsText(f); e.target.value = "";
+});
+
+/* scroll spy */
+const links = [...document.querySelectorAll("[data-r]")];
+DATA.forEach(p => {
+  const o = new IntersectionObserver(es => es.forEach(en => {
+    if (en.isIntersecting) links.forEach(l => l.classList.toggle("on", l.dataset.r === p.id));
+  }), {rootMargin:"-12% 0px -72% 0px"});
+  o.observe(document.getElementById(p.id));
+});
+
+paint(); filter();
+</script>
+</body>
+</html>
