@@ -30,12 +30,12 @@ A personal roadmap for going from zero to job-ready in cybersecurity, built arou
 - [ ] [Starting Out In Cyber Sec](https://tryhackme.com/room/startingoutincybersec) — Langkah awal memulai belajar keamanan siber.
 - [ ] [Careers in Cyber](https://tryhackme.com/room/careersincyber) — Cari tahu ada role apa saja di dunia keamanan siber.
 - [ ] [Introductory Researching](https://tryhackme.com/room/introtoresearch) — Seni mencari informasi dan solusi secara mandiri.
-- [ ] Regular expressions — Belajar pola karakter (Regex) untuk pencarian data. *(link missing in source sheet — search "Regular Expressions" on TryHackMe)*
+- [ ] [Regular expressions](https://tryhackme.com/room/catregex) — Belajar pola karakter (Regex) untuk pencarian data.
 
 > 🔥 Milestone: **Get Badge — 7 Day Streak**
 
 ### 🐧 Linux
-- [ ] Linux Fundamentals 1 — Dasar-dasar perintah terminal Linux bagian 1. *(source sheet links this to the Linux Strength Training URL below — verify and fix, likely means [Linux Fundamentals Part 1](https://tryhackme.com/room/linuxfundamentalspart1))*
+- [ ] [Linux Fundamentals Part 1](https://tryhackme.com/room/linuxfundamentalspart1) — Dasar-dasar perintah terminal Linux bagian 1.
 - [ ] [Linux Strength Training](https://tryhackme.com/room/linuxstrengthtraining) — Pelajari/memperkuat keterampilan baris perintah Linux.
 - [ ] [Linux Modules](https://tryhackme.com/room/linuxmodules) — Belajar mengenai modul-modul sistem pada Linux.
 
@@ -97,7 +97,7 @@ A personal roadmap for going from zero to job-ready in cybersecurity, built arou
 
 ### 🖥️ Web
 - [ ] [Web Application Basics](https://tryhackme.com/room/webapplicationbasics) — Pelajari dasar-dasar aplikasi web: HTTP, URL, dll.
-- [ ] [Web Application Security](https://tryhackme.com/room/detectingwebattacks) — Pelajari web app dan jelajahi beberapa masalah keamanan umum. *(source sheet points this to the same URL as Detecting Web Attacks below — verify)*
+- [ ] [Web Application Security](https://tryhackme.com/room/introwebapplicationsecurity) — Pelajari web app dan jelajahi beberapa masalah keamanan umum.
 - [ ] [Detecting Web Attacks](https://tryhackme.com/room/detectingwebattacks) — Jelajahi serangan web dan metode deteksi.
 - [ ] [Vulnerabilities 101](https://tryhackme.com/room/vulnerabilities101) — Klasifikasi dan pemahaman jenis kerentanan.
 - [ ] [SQL Injection](https://tryhackme.com/room/sqlinjectionlm) — Memahami serangan injeksi pada database.
@@ -170,9 +170,3 @@ The source spreadsheet includes two large, actively-maintained third-party lists
 
 **Recommendation:** link out to the original sheet/source instead of copy-pasting the box list, and use the "Practice Machines" tab's own pattern (File → Make a copy) for your personal progress tracking rather than putting it on the public site.
 
----
-
-## Known data issues to verify (found while pulling this list)
-- **Linux Fundamentals 1** and **Linux Strength Training** point to the same URL in the source sheet — likely a copy-paste error; Linux Fundamentals 1 should probably link to `tryhackme.com/room/linuxfundamentalspart1`.
-- **Regular expressions** has no URL set in the source sheet.
-- **Web Application Security** and **Detecting Web Attacks** point to the same URL — worth double-checking these are meant to be different rooms.
